@@ -1,0 +1,32 @@
+from twilio.twiml.messaging_response import MessagingResponse
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/whatsapp', methods=['POST'])
+def whatsapp_reply():
+    # Get the message that was sent to the chatbot
+    incoming_msg = request.values.get('Body', '').lower()
+
+    # Create a response message
+    resp = MessagingResponse()
+    msg = resp.message()
+    responded = False
+
+    # Check if the message contains certain keywords and respond accordingly
+    if 'hello' in incoming_msg:
+        msg.body('Hello there!')
+        responded = True
+    if 'bye' in incoming_msg:
+        msg.body('Goodbye!')
+        responded = True
+
+    # If the chatbot did not understand the message,
+    # it should respond with a default message
+    if not responded:
+        msg.body('I am sorry, I did not understand your message.')
+
+    return str(resp)
+
+if __name__ == '__main__':
+    app.run()
